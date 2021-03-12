@@ -6,8 +6,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Echo
-        run: echo ${GITHUB_REF#refs/tags/}
       - name: Checkout
         uses: actions/checkout@main
         with:
