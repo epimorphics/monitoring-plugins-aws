@@ -16,7 +16,7 @@ jobs:
         uses: jakejarvis/s3-sync-action@master
         env:
           AWS_S3_BUCKET: s3://epi-repository/release/monitoring-plugins/epimorphics/monitoring-plugins-aws/
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.BUILD_EPI_EXPT_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.BUILD_EPI_EXPT_AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: 'eu-west-1'
           SOURCE_DIR: 'release'
