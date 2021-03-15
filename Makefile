@@ -1,15 +1,21 @@
 NAME=monitoring-aws
 VERSION?=SNAPSHOT
-TGZ=${NAME}-${VERSION}.tgz
+DIR=release
+ROOT=${DIR}/${NAME}-${VERSION}
+TGZ=${ROOT}.tgz
+SHA=${ROOT}.sha
 
-all: clean archive 
+all: clean product
 	
-archive: ${TGZ}
+arch: product
 
-${TGZ}:
+${DIR}:
+	@mkdir $@
+
+product: ${DIR}
 	@echo "Creating ${TGZ} ..."
 	@tar zcf ${TGZ} bin
-	@sha512sum ${TGZ} | tee ${NAME}-${VERSION}.sha
+	@sha512sum ${TGZ} | tee ${SHA}
 
 clean:
-	@rm -f ${TGZ}
+	@rm -rf ${DIR}
