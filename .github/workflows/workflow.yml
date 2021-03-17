@@ -12,6 +12,15 @@ jobs:
           fetch-depth: 1
       - name: Run Makefile
         run: make VERSION=${GITHUB_REF#refs/tags/} clean product
+      - name: dump env
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.BUILD_EPI_EXPT_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.BUILD_EPI_EXPT_AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: 'eu-west-1'
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+          DEST_DIR: ${{ secrets.AWS_S3_DIRECTORY }}
+          SOURCE_DIR: 'release'
+        run: make env
       - name: Publish to S3
         uses: jakejarvis/s3-sync-action@master
         env:
