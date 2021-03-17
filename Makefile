@@ -19,7 +19,3 @@ product: ${DIR}
 
 clean:
 	@rm -rf ${DIR}
-
-env:
-	@env > env.txt
-	@cat env.txt
