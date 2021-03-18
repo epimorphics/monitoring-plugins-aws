@@ -1,7 +1,6 @@
+name: Assets Test
 on:
   workflow_dispatch:
-
-name: Create Assets
 
 jobs:
   build:
@@ -14,4 +13,4 @@ jobs:
         run: |
           echo "NAME=${GITHUB_REPOSITORY#epimorphics/}" >> $GITHUB_ENV
       - name: Build assets
-        run: make NAME=${{ env.NAME }} VERSION=${{ env.VERSION }} clean assets
+        run: make NAME=${{ env.NAME }} clean assets
