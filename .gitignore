@@ -1,2 +1,2 @@
-*.sha
-*.tgz
+*_sha512-checksums.txt
+*.tar.gz

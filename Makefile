@@ -1,21 +1,22 @@
 NAME=monitoring-aws
 VERSION?=SNAPSHOT
-DIR=release
-ROOT=${DIR}/${NAME}-${VERSION}
-TGZ=${ROOT}.tgz
-SHA=${ROOT}.sha
+DIR=.
+ROOT=${DIR}/${NAME}_${VERSION}
+TGZ=${ROOT}.tar.gz
+SHA=${ROOT}_sha512-checksums.txt
 
-all: clean product
+all: clean assets
+
+assets: sha
+
+sha: ${SHA}
 	
-arch: product
-
-${DIR}:
-	@mkdir $@
-
-product: ${DIR}
+${TGZ}:
 	@echo "Creating ${TGZ} ..."
 	@tar zcf ${TGZ} bin
+
+${SHA}: ${TGZ}
 	@sha512sum ${TGZ} | tee ${SHA}
 
 clean:
-	@rm -rf ${DIR}
+	@rm -f ${TGZ} ${SHA}

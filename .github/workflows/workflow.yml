@@ -1,23 +1,55 @@
 on:
   push:
+    # Sequence of patterns matched against refs/tags
     tags:
-      - "*"
+      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+
+name: Create Release
+
 jobs:
   build:
+    name: Create Release
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@main
-        with:
-          fetch-depth: 1
-      - name: Run Makefile
-        run: make VERSION=${GITHUB_REF#refs/tags/} clean product
-      - name: Publish to S3
-        uses: jakejarvis/s3-sync-action@master
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Set version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
+      - name: Build assets
+        run: make VERSION=${{ env.VERSION }} clean assets
+      - name: Create release
+        id: create_release
+        uses: actions/create-release@v1
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.BUILD_EPI_EXPT_AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.BUILD_EPI_EXPT_AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: 'eu-west-1'
-          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
-          DEST_DIR: ${{ secrets.AWS_S3_DIRECTORY }}
-          SOURCE_DIR: 'release'
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: |
+            Automated release ${{ github.ref }}
+          draft: true
+          prerelease: false
+      - name: Upload release asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ env.NAME }}_${{ env.VERSION }}.tar.gz 
+          asset_name: ${{ env.NAME }}_${{ env.VERSION }}.tar.gz
+          asset_content_type: application/gzip
+      - name: Upload release asset checksum
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ env.NAME }}_${{ env.VERSION }}_sha512-checksums.txt
+          asset_name: ${{ env.NAME }}_${{ env.VERSION }}_sha512-checksums.txt
+          asset_content_type: application/gzip
+      - name: Publish release
+        uses: StuYarrow/publish-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          id: ${{ steps.create_release.outputs.id }}
