@@ -1,4 +1,4 @@
-NAME=monitoring-aws
+NAME?=monitoring-aws
 VERSION?=SNAPSHOT
 DIR=.
 ROOT=${DIR}/${NAME}_${VERSION}
