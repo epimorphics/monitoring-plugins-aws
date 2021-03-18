@@ -49,15 +49,6 @@ jobs:
           asset_path: ${{ env.NAME }}_${{ env.VERSION }}_sha512-checksums.txt
           asset_name: ${{ env.NAME }}_${{ env.VERSION }}_sha512-checksums.txt
           asset_content_type: text/plain
-      - name: Upload release bonsai asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: bonsai.yml
-          asset_name: bonsai.yml
-          asset_content_type: text/plain
       - name: Publish release
         uses: StuYarrow/publish-release@v1
         env:
