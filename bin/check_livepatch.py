@@ -30,8 +30,8 @@ p = subprocess.Popen("yum kernel-livepatch supported", stdout=subprocess.PIPE, s
 ## Wait for date to terminate. Get return returncode ##
 p_status = p.wait()
 
-error = p_error.decode('utf-8')
-output = p_output.decode('utf-8')
+error = p_error.decode('utf-8').rstrip("\n")
+output = p_output.decode('utf-8').rstrip("\n")
 
 if p_status:
   state = 2
