@@ -11,7 +11,7 @@ state = 3
 
 # Initiate the parser (https://docs.python.org/3/library/argparse.html)
 parser = argparse.ArgumentParser()
-parser.add_argument("-V", "--version", action='version', version='%(prog)s 1.0')
+parser.add_argument("-V", "--version", action='version', version='%(prog)s 1.1')
 
 # Read arguments from the command line
 args = parser.parse_args()
@@ -39,7 +39,7 @@ if rc == 1:
   summary = "Unable to determine security package status\n{}".format(text)
 elif rc == 100:
   state = 2;
-  summary = "The following packages apply outstanging security patches:\n{}".format(text)
+  summary = "The following packages apply outstanding security patches:\n{}".format(text)
 else:
   summary = "There are no outstanging security patches."
   (rc, text) = check(False)
@@ -48,10 +48,10 @@ else:
     summary = "{}\nUnable to determine package status\n{}".format(summary, text)
   elif rc == 100:
     state = 1
-    summary = "()\nThe following packages have outstanging patches:\n{}".format(summary, text)
+    summary = "()\nThe following packages have outstanding patches:\n{}".format(summary, text)
   else:
     state = 0
-    summary = "There are no outstanging patches."
+    summary = "There are no outstanding patches."
 
 print("{}: {}".format(status[state], summary))
 
