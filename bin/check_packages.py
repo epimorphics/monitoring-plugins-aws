@@ -48,7 +48,7 @@ else:
     summary = "{}\nUnable to determine package status\n{}".format(summary, text)
   elif rc == 100:
     state = 1
-    summary = "()\nThe following packages have outstanding patches:\n{}".format(summary, text)
+    summary = "{}\nThe following packages have outstanding patches:\n{}".format(summary, text)
   else:
     state = 0
     summary = "There are no outstanding patches."
