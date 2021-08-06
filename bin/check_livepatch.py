@@ -12,7 +12,7 @@ state = 3 # Unknown
 parser = argparse.ArgumentParser()
 parser.add_argument("-c", "--critical", dest="crit", help="Critical", action="store")
 parser.add_argument("-w", "--warning",  dest="warn", help="Warning",  action="store")
-parser.add_argument("-V", "--version", action='version', version='%(prog)s 1.1')
+parser.add_argument("-V", "--version", action='version', version='%(prog)s 1.2')
 
 # Read arguments from the command line
 args = parser.parse_args()
@@ -41,7 +41,7 @@ if p_status:
     print("Reboot required to enable livepatch.")
   else:
     state = 3
-    print("Unknown error. {}.".format(error))
+    print("Error:",output,error)
 else:
   match = re.search("The current version of the Linux kernel you are running will no longer receive live patches after (\d{4}-\d{2}-\d{2}).", output)
   if match:
