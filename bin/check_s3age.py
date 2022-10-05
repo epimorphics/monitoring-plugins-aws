@@ -70,13 +70,10 @@ def get_s3_objects(bucket, prefixes=None, suffixes=None, last_modified_min=None,
             # The S3 API response is a large blob of metadata.
             # 'Contents' contains information about the listed objects.
             resp = s3.list_objects_v2(**kwargs)
-            for content in resp.get('Contents', []):
-                last_modified_date = content['LastModified']
-                if (
-                    content['Key'].endswith(suffixes) and
-                    last_modified_rule(last_modified_min, last_modified_date, last_modified_max)
-                ):
-                    yield content
+            for obj in resp.get('Contents', []):
+                last_modified_date = obj['LastModified']
+                if obj['Key'].endswith(suffixes) and last_modified_rule(last_modified_min, last_modified_date, last_modified_max):
+                    yield obj
 
             # The S3 API is paginated, returning up to 1000 keys at a time.
             # Pass the continuation token into the next response, until we
@@ -85,25 +82,6 @@ def get_s3_objects(bucket, prefixes=None, suffixes=None, last_modified_min=None,
                 kwargs['ContinuationToken'] = resp['NextContinuationToken']
             except KeyError:
                 break
-
-
-def get_s3_keys(bucket, prefixes=None, suffixes=None, last_modified_min=None, last_modified_max=None):
-    """
-    Generate the keys in an S3 bucket.
-
-    :param bucket: Name of the S3 bucket.
-    :ptype bucket: str
-    :param prefixes: Only fetch keys that start with these prefixes (optional).
-    :ptype prefixes: tuple
-    :param suffixes: Only fetch keys that end with thes suffixes (optional).
-    :ptype suffixes: tuple
-    :param last_modified_min: Only yield objects with LastModified dates greater than this value (optional).
-    :ptype last_modified_min: datetime.date
-    :param last_modified_max: Only yield objects with LastModified dates greater than this value (optional).
-    :ptype last_modified_max: datetime.date
-    """
-    for obj in get_s3_objects(bucket, prefixes, suffixes, last_modified_min, last_modified_max):
-        yield obj['Key']
 
 
 def valid_datetime(date):
@@ -122,22 +100,24 @@ def main():
     logger.setLevel(logging.INFO)
 
     parser = argparse.ArgumentParser(description='List keys in S3 bucket for prefix')
-    parser.add_argument('-b', '--bucket', help='S3 Bucket')
-    parser.add_argument('-p', '--prefixes', nargs='+', help='Filter s3 keys by a set of prefixes')
-    parser.add_argument('-s', '--suffixes', nargs='*', help='Filter s3 keys by a set of suffixes')
+    parser.add_argument('-b', '--bucket', required=True, help='S3 Bucket')
+    parser.add_argument('-p', '--prefixes', required=True, nargs='+', help='Filter s3 keys by a set of prefixes')
+    parser.add_argument('-s', '--suffixes', nargs='+', help='Filter s3 keys by a set of suffixes')
     parser.add_argument('-n', '--last_modified_min', default=None, type=valid_datetime, help='Filter s3 content by minimum last modified date')
     parser.add_argument('-x', '--last_modified_max', default=None, type=valid_datetime, help='Filter s3 content by maximum last modified date')
 
     args = parser.parse_args()
     logger.debug(args)
-    keys = get_s3_keys(args.bucket, args.prefixes, args.suffixes, args.last_modified_min, args.last_modified_max)
 
-    counter = 0
-    for key in keys:
-        if counter == 0:
-            print('OK: Retrieved keys')
-        print(key)
-        counter += 1
+    objects = get_s3_objects(args.bucket, args.prefixes, args.suffixes, args.last_modified_min, args.last_modified_max)
+
+    if objects:
+        counter = 0
+        for obj in objects:
+            if counter == 0:
+                print('OK: Retrieved keys')
+            print("{}\t{}".format(obj['LastModified'], obj['Key']))
+            counter += 1
         exit(0)
 
     print('CRITICAL: No keys found')
