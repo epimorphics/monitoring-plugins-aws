@@ -118,7 +118,8 @@ def main():
                 print('OK: Retrieved keys')
             print("{}\t{}".format(obj['LastModified'], obj['Key']))
             counter += 1
-        exit(0)
+        if counter != 0:
+            exit(0)
 
     print('CRITICAL: No keys found')
     exit(2)
