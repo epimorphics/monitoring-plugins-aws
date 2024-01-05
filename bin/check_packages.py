@@ -18,7 +18,7 @@ args = parser.parse_args()
 
 
 def check(security):
-  cmd="yum check-update -q{}".format(" --security" if security else "")
+  cmd="sudo yum check-update -q{}".format(" --security" if security else "")
 
   p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
 
