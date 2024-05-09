@@ -1,5 +1,8 @@
 #! /usr/bin/python3
 
+# Amaxon Linux 2 version.i
+# Do not update. Update non-aws version and delete when AL2 no longer used.
+
 import argparse
 import datetime
 import re
@@ -18,7 +21,7 @@ args = parser.parse_args()
 
 
 def check(security):
-  cmd="sudo yum check-update -q{}".format(" --security" if security else "")
+  cmd="yum check-update -q{}".format(" --security" if security else "")
 
   p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
 
